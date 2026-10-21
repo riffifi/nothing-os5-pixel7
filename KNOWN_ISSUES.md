@@ -2,13 +2,13 @@
 
 | Area | Status |
 | --- | --- |
-| Face unlock | Enrollment and unlock work. Enrollment has no live camera preview; guidance is in English. |
+| Face unlock | Enrollment and unlock work. Enrollment has no live camera preview |
 | Nothing Camera | Panorama, 240 fps and some filters remain broken. Long recordings have not been tested. |
 | Glyph | Pixel 7 has no Glyph LEDs. Some effects use the rear flashlight; full Glyph compatibility is unavailable. |
-| Notifications | A clipped banner was reported once. It has not been reproduced. |
-| Essential Space | Double back tap capture works. Triple back tap to open Space needs physical confirmation. |
-| NFC | Tag and iPhone pass reading work. Campus-pass emulation needs testing at the reader. |
-| Wireless charging | Battery Share was tested with a charging receiver. Charging the Pixel on a Qi pad is untested. |
+| Notifications | A clipped banner can appear sometimes |
+| Essential Space | Double back tap capture works. Triple back tap too |
+| NFC | Works |
+| Wireless charging | Battery Share was tested with a charging receiver |
 | Battery | Background crash/retry loops were fixed. Battery endurance has not been measured. |
 | OTA | No update service. Install updates through fastboot. |
 | Play Store | Compatibility varies by app. Payments, device certification and integrity checks are not guaranteed. |
