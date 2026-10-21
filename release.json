@@ -1,0 +1,42 @@
+{
+  "name": "Nothing OS 5.0 for Pixel 7",
+  "version": "27",
+  "status": "experimental",
+  "device": "panther",
+  "base_build": "DP11.260918.006",
+  "bootloader": "cloudripper-17.0-16334835",
+  "baseband": "g5300q-260818-260901-B-16228442",
+  "slot": "a",
+  "images": [
+    {
+      "file": "system.img",
+      "partition": "system_a",
+      "size": 1879175168,
+      "sha256": "7ec4f42c6f524d827e808a0da088719fa6d8076e96717b326dc7cd69d15f50ee"
+    },
+    {
+      "file": "system_ext.img",
+      "partition": "system_ext_a",
+      "size": 1436680192,
+      "sha256": "0f3965972d182987e0df6586948ae576b7e71cc005271f8edbf367a7b6f3c33f"
+    },
+    {
+      "file": "product.img",
+      "partition": "product_a",
+      "size": 3985092608,
+      "sha256": "9a0b49a278b51ca4f559c5b90024003cb0766ac6575252f84f2b372141d414d2"
+    },
+    {
+      "file": "vbmeta.img",
+      "partition": "vbmeta_a",
+      "size": 12288,
+      "sha256": "e2816555dd931ba574c86ce33f7208a64117cdf754cc043762b7bf3fc9840a71"
+    }
+  ],
+  "validation": {
+    "boot": "verified on one Pixel 7",
+    "selinux": "Enforcing",
+    "clean_install": "not tested on a second device",
+    "ota": false
+  }
+}

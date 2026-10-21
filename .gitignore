@@ -1,0 +1,16 @@
+# Images, signing keys and device logs stay local.
+/*
+!/.gitignore
+!/README.md
+!/FLASHING.md
+!/KNOWN_ISSUES.md
+!/release.json
+!/flash.py
+!/tools/
+!/tests/
+/tools/*
+!/tools/package_release.py
+/tests/*
+!/tests/test_flash.py
+__pycache__/
+*.pyc
