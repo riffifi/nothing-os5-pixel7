@@ -19,114 +19,101 @@ partitions can prevent the new images from fitting.
 | Bootloader lock | Unlocked |
 | Snapshot status | `none` |
 
-The matching factory download is
-[panther DP11.260918.006](https://dl.google.com/developers/android/cinnamonbun/images/factory/panther_beta-dp11.260918.006-factory-a2f235d7.zip).
-Its SHA-256 is:
+Download the matching
+[Google factory image](https://dl.google.com/developers/android/cinnamonbun/images/factory/panther_beta-dp11.260918.006-factory-a2f235d7.zip).
+Its SHA-256 is `a2f235d773da922fe5f8ee6dea1fbea7f5fb9badc5b3856aa5ca5f20ed7fa278`.
+Install it using Google's included instructions. Back up first: unlocking and
+factory installation erase data. Do not downgrade a newer bootloader to force a
+match. If this base cannot be installed, this release is not compatible.
 
-```text
-a2f235d773da922fe5f8ee6dea1fbea7f5fb9badc5b3856aa5ca5f20ed7fa278
-```
+The automatic installer checks the model, bootloader, radio, slot and snapshot
+status. It preserves Pixel boot, vendor and radio partitions; it does not install
+the factory base or unlock the bootloader.
 
-Back up your data, unlock the bootloader and install that factory package using
-Google's included instructions. Unlocking and factory installation erase data.
-Do not substitute a newer build or downgrade a newer bootloader to force a match.
-If the required base cannot be installed, this release is not compatible.
+## Automatic installation
 
-The installer checks device, bootloader, radio, slot and snapshot status. Those
-checks cannot prove every retained partition matches: installing the full base
-is still required. It preserves Pixel boot, vendor and radio partitions.
+Download [flash.py](https://github.com/riffifi/nothing-os5-pixel7/releases/download/v27/flash.py)
+into an empty writable folder. Install Python 3.11+ from
+[python.org](https://www.python.org/downloads/) if needed. Allow about 11 GiB of
+free space for the compressed downloads, extracted images and tools.
 
-## Extract and verify
+On Windows, install the [Google USB driver](https://developer.android.com/studio/run/win-usb)
+if the phone is not recognized. The phone must also be recognized after switching
+into fastbootd. On Linux, your user needs USB device access through the distro's
+Android udev rules. The script does not require a system installation of adb,
+fastboot, pip or zstd.
 
-Use Linux, Python 3.11+, unzip, zstd and Android Platform Tools. Fastboot 34.0.5
-with 16 MiB transfers was used on the development phone; newer fastboot caused
-USB transfer failures there. Use a reliable data cable. Allow 8 GB for extraction,
-in addition to the downloaded files. Download all three `.img.zst` files,
-`nothing-os5-panther-v27-installer.zip` and `SHA256SUMS.downloads` into one folder.
-
-```sh
-sha256sum -c SHA256SUMS.downloads
-unzip nothing-os5-panther-v27-installer.zip -d nothing-os5-panther-v27
-for image in system system_ext product; do
-  zstd -d "$image.img.zst" -o "nothing-os5-panther-v27/$image.img"
-done
-cd nothing-os5-panther-v27
-sha256sum -c SHA256SUMS
-python3 flash.py --verify-only
-```
-
-`--verify-only` reads the images without contacting a phone. Decompression produces
-raw, fastboot-flashable images. The installer ZIP is not a recovery-flashable ZIP.
-
-## First installation
-
-With the matching Google base installed, check its build in Android:
+Connect one Pixel 7 by USB. Either leave it in bootloader fastboot, or enable USB
+debugging in Android and accept this computer's authorization prompt. Then run:
 
 ```sh
-adb shell getprop ro.build.id
-adb reboot bootloader
-fastboot devices
+# Linux
+python3 flash.py
 ```
 
-Use the device serial printed by fastboot in place of `SERIAL`:
-
-```sh
-python3 flash.py --check SERIAL
-python3 flash.py --install SERIAL
+```powershell
+# Windows PowerShell
+py -3 flash.py
 ```
 
-The installer asks you to type `ERASE panther DP11.260918.006`. It enters
-fastbootd, resizes and flashes `system_a`, `system_ext_a` and `product_a`, then
-returns to the bootloader, flashes `vbmeta_a` with verification disabled,
-erases user data, selects slot A and reboots. It does not modify slot B or delete
-partitions to make room.
+The script downloads the three compressed ROM images, obtains `vbmeta.img` from
+the installer ZIP, verifies the embedded checksums and extracts the images. It
+installs a Zstandard decoder into `.tools/python` and downloads Google's Platform
+Tools 34.0.5 into `.tools`. Python dependencies stay in this folder. That fastboot
+version was used on the development phone; newer fastboot caused USB failures.
 
-If a resize or transfer fails, stop and leave the phone in fastboot. Check the
-cable and required base before retrying the same bundle. Do not boot a partially
-written installation. An insufficient-space error can require reinstalling the
-full factory base; do not delete arbitrary logical partitions.
+Completed downloads are reused; interrupted downloads resume when supported by
+the server. Files remain next to the script unless `--directory PATH` is supplied.
 
-After Android starts, complete setup and check:
+The script selects the only connected phone, or accepts a serial number. With
+an authorized ADB connection, it checks the Pixel model and reboots to the
+bootloader. It checks the firmware and asks you to type
+`ERASE panther DP11.260918.006` before writing or erasing anything.
+
+It then resizes and flashes `system_a`, `system_ext_a` and `product_a` through
+fastbootd, flashes `vbmeta_a` with verification disabled, erases user data,
+selects slot A and reboots. Slot B is not flashed. Other partitions are not
+deleted to make room.
+
+If a transfer or resize fails, leave the phone in fastboot and retry with the
+same script and folder after checking the cable and required base. Do not boot
+a partial installation or relock. An insufficient-space error may require
+reinstalling the full factory base.
+
+## Options
+
+The commands below use `python3`; on Windows replace it with `py -3`.
 
 ```sh
-adb wait-for-device
-adb shell getprop sys.boot_completed
-adb shell getenforce
-```
-
-Expected results: `1` and `Enforcing`. Test calls, mobile data, cameras, sound and
-charging before relying on the phone. Known limitations are in
-[KNOWN_ISSUES.md](KNOWN_ISSUES.md).
-
-## Updates
-
-For an existing installation of this port on the same firmware base:
-
-```sh
-adb reboot bootloader
-python3 flash.py --update SERIAL
+python3 flash.py --download-only       # Download, extract and verify; no USB access
+python3 flash.py --verify-only         # Verify local images; no downloads or USB access
+python3 flash.py --check               # Prepare images/tools and check the connected phone
+python3 flash.py --install SERIAL      # Select a specific phone; first install wipes data
+python3 flash.py --update              # Update an existing installation of this port
+python3 flash.py --directory PATH      # Choose the image and tool storage folder
 ```
 
 Update mode asks for `UPDATE panther DP11.260918.006` and preserves user data.
-Do not use it to migrate from stock or another ROM. Back up before updating.
-Set `FASTBOOT=/path/to/fastboot` to choose a particular fastboot executable.
+Use it only for this port on the same firmware base, not for migration from stock
+or another ROM. Back up before updating. Set the `FASTBOOT` environment variable
+to override the downloaded fastboot executable.
 
-## Optional Pixel Camera
+Manual download is also supported: place the extracted `system.img`,
+`system_ext.img`, `product.img` and `vbmeta.img` beside the script. Verified
+existing images are reused. Pixel Camera remains an optional separate APK in
+the release assets; install it with `adb install -r PixelCamera-9.8.102-panther.apk`.
+The modified Nothing Camera is already included.
 
-Download `PixelCamera-9.8.102-panther.apk` and its checksum alongside the ROM.
-The APK is Google-signed, version `9.8.102.738511538.14`, from the matching Pixel
-factory image. Rear and front photos have been tested on this port.
+## Validation and recovery
 
-```sh
-sha256sum -c PixelCamera-9.8.102-panther.apk.sha256
-adb install -r PixelCamera-9.8.102-panther.apk
-```
+This image set has booted on one Pixel 7 with SELinux enforcing. The original
+installer had simulated safety tests; the automatic downloader and Windows path
+have not been run on a Windows machine. Review [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
-The modified Nothing Camera is already included. If installing Pixel Camera
-reports a signature conflict, keep the existing app and its data.
+After Android starts, complete setup and check `adb shell getprop sys.boot_completed`
+and `adb shell getenforce`: expected results are `1` and `Enforcing`. Test calls,
+data, cameras, sound and charging before relying on the phone.
 
-## Restore stock
-
-Use the matching Google factory package and its included flashing instructions.
-Restoring stock erases data. Never relock the bootloader with this port installed;
+To restore stock, use the matching Google factory package and its included
+instructions. Restoring stock erases data. Never relock with this port installed;
 only consider relocking after an unmodified stock installation has booted.

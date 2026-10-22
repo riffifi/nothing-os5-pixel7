@@ -3,9 +3,24 @@
 Unofficial port for **Pixel 7 (`panther`)**. Release **27** requires Google's
 Android 17 **DP11.260918.006** firmware. Pixel 7 Pro and Pixel 7a are not supported.
 
-Download the three compressed partition images, installer ZIP and download
-checksums from this repo's release assets. Follow [FLASHING.md](FLASHING.md)
-to extract the images and install them.
+Download [flash.py](https://github.com/riffifi/nothing-os5-pixel7/releases/download/v27/flash.py)
+into an empty folder and run it with Python 3.11+:
+
+```sh
+# Linux
+python3 flash.py
+```
+
+```powershell
+# Windows
+py -3 flash.py
+```
+
+The script downloads the ROM, Platform Tools and its decompression dependency,
+verifies the images, finds the phone and installs the port after confirmation.
+If USB debugging is authorized, it can reboot the phone to the bootloader.
+An unlocked bootloader and the matching Google firmware are still required.
+See [FLASHING.md](FLASHING.md) for Windows USB drivers and installation details.
 
 ## Features
 
@@ -24,6 +39,7 @@ before installing. First installation erases data; keep the bootloader unlocked.
 
 ## Release files
 
+- `flash.py` — standalone automatic downloader and installer.
 - `system.img.zst`, `system_ext.img.zst`, `product.img.zst` — partition images.
 - `nothing-os5-panther-v27-installer.zip` — installer, `vbmeta.img` and docs.
 - `SHA256SUMS.downloads` — checksums for the four required downloads.

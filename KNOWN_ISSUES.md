@@ -13,9 +13,10 @@
 | OTA | No update service. Install updates through fastboot. |
 | Play Store | Compatibility varies by app. Payments, device certification and integrity checks are not guaranteed. |
 
-The partition set has booted on one Pixel 7. The public installer has been tested
-with simulated fastboot responses and verified image files; a fresh installation
-on another phone is untested. This is an experimental release.
+The partition set has booted on one Pixel 7. The original flashing flow was tested
+with simulated fastboot responses and verified image files. The automatic
+downloader and Windows path have not been exercised on a Windows machine; a
+fresh installation on another phone is untested. This is an experimental release.
 
 Verified Boot is disabled and the bootloader must remain unlocked. The port uses
 modified framework code and locally signed components. SELinux remains enforcing.

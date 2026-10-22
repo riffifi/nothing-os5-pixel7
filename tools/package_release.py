@@ -144,6 +144,9 @@ def main():
         downloads[archive.name] = digest(archive)
         (args.output / "SHA256SUMS.downloads").write_text("".join(
             f"{value}  {name}\n" for name, value in sorted(downloads.items())))
+        standalone = args.output / "flash.py"
+        shutil.copyfile(ROOT / "flash.py", standalone)
+        (args.output / "flash.py.sha256").write_text(f"{digest(standalone)}  flash.py\n")
         if args.pixel_camera:
             apk = args.output / "PixelCamera-9.8.102-panther.apk"
             if not apk.exists():
